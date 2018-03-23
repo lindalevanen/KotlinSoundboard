@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         for(i in 0..11) {
             val sb = layoutInflater.inflate(R.layout.sound_button, soundBoardGrid, false)
             sb.id = i
-            // moi
             sb.setOnTouchListener { v, event ->
                 if(event.action == MotionEvent.ACTION_DOWN) {
                     mSoundPool.play(mDrumSoundId, 1f, 1f, 0, 0, 1f)
