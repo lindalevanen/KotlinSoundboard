@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
             .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
             .setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED)
             .setUsage(AudioAttributes.USAGE_GAME)
-            .build();
+            .build()
 
     val mSoundPool: SoundPool =
         SoundPool.Builder()
@@ -33,13 +33,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initSounds() {
-        mDrumSoundId = mSoundPool.load(this, R.raw.drum_sound, 1);
+        mDrumSoundId = mSoundPool.load(this, R.raw.drum_sound, 1)
     }
 
     private fun initSoundButtons() {
         for(i in 0..11) {
             val sb = layoutInflater.inflate(R.layout.sound_button, soundBoardGrid, false)
             sb.id = i
+            // moi
             sb.setOnTouchListener { v, event ->
                 if(event.action == MotionEvent.ACTION_DOWN) {
                     mSoundPool.play(mDrumSoundId, 1f, 1f, 0, 0, 1f)
