@@ -19,11 +19,11 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <Button
+        <Button android:id="@+id/recButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Button 1"/>
+            android:text="REC"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="0dp"
