@@ -35,7 +35,6 @@ class SoundPlayer(val context: Context) {
 
         for (sound in sounds) {
             val resId = context.getResources().getIdentifier(sound, "raw", context.packageName);
-            println(resId)
             val soundId = mSoundPool.load(context, resId, 1)
             mSoundArray.add(Sound(sound, soundId))
         }
