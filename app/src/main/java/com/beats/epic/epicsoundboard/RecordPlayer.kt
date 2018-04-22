@@ -7,19 +7,32 @@ import android.os.Handler
  */
 class RecordPlayer(private val soundPlayer: SoundPlayer) {
 
-    init {
+    private var keepPlaying = false;
+
+    fun init() {
+        startLoop()
     }
 
+    fun isPlaying(): Boolean { return keepPlaying }
+
     fun playSounds(sounds: HashMap<Long, Int>) {
+        val last: Long? = sounds.keys.max()
         for((key, value) in sounds) {
-            Handler().postDelayed(Runnable {
-                soundPlayer.playSound(value)
+            Handler().postDelayed({
+                soundPlayer.playSound(value, true)
+                if (key == last && keepPlaying) {
+                    playSounds(sounds)
+                }
             }, key)
         }
     }
 
-    fun stopPlay() {
-        //TODO
+    fun startLoop() {
+        keepPlaying = true
+    }
+
+    fun stopLoop() {
+        keepPlaying = false
     }
 
 }

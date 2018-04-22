@@ -23,12 +23,12 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="REC"/>
-        <Button
+            android:text="@string/rec_button_start"/>
+        <Button android:id="@+id/clearButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Button 2"/>
+            android:text="@string/empty_button"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="0dp"

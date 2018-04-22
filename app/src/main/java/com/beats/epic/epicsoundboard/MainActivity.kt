@@ -13,48 +13,57 @@ class MainActivity : AppCompatActivity() {
     private  var recordedSounds: HashMap<Long, Int> = HashMap()
 
     lateinit private var mSoundPlayer: SoundPlayer
-    //lateinit var mRecordPlayer: RecordPlayer
+    lateinit var mRecordPlayer: RecordPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initSoundPlayer()
+        initPlayers()
         initActionButtons()
         initSoundButtons()
     }
 
-    private fun initSoundPlayer() {
+    private fun initPlayers() {
         mSoundPlayer = SoundPlayer(this)
         mSoundPlayer.initsounds()
+        mRecordPlayer = RecordPlayer(mSoundPlayer)
     }
 
     private fun initActionButtons() {
         recButton.setOnClickListener {
             if (recording) {
-                recButton.text = getString(R.string.rec_button)
+                recButton.text = getString(R.string.rec_button_start)
                 stopRecording()
             } else {
                 recButton.text = getString(R.string.rec_button_stop)
                 startRecording()
             }
         }
+        clearButton.setOnClickListener {
+            if(mRecordPlayer.isPlaying()) {
+                mRecordPlayer.stopLoop()
+                clearButton.text = resources.getText(R.string.empty_button)
+            }
+        }
     }
 
     private fun stopRecording() {
         recording = false
-        val player = RecordPlayer(mSoundPlayer)
-        player.playSounds(recordedSounds)
+        mRecordPlayer.init()
+        mRecordPlayer.playSounds(recordedSounds)
     }
 
     private fun startRecording() {
         recording = true
         recordedSounds = HashMap()
         startTime = System.currentTimeMillis()
+        clearButton.text = resources.getText(R.string.clear_button)
     }
 
     private fun initSoundButtons() {
 
+        mSoundPlayer.addView(soundBoardGrid)
         for(i in 0..11) {
             val sb = layoutInflater.inflate(R.layout.sound_button, soundBoardGrid, false)
             if(i >= mSoundPlayer.getSounds().size) {
@@ -65,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 
             sb.setOnTouchListener { v, event ->
                 if(event.action == MotionEvent.ACTION_DOWN) {
-                    mSoundPlayer.playSound(v.id)
+                    mSoundPlayer.playSound(v.id, false)
                     if(recording) {
                         val time = System.currentTimeMillis() - startTime
                         recordedSounds.put(time, v.id)
