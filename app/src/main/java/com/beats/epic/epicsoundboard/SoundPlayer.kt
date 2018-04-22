@@ -29,18 +29,16 @@ class SoundPlayer(val context: Context) {
     }
 
     fun initsounds() {
-        val drumSoundId = mSoundPool.load(context, R.raw.drum_sound, 1)
-        mSoundArray.add(Sound("Drums", drumSoundId))
-        val hornSoundId = mSoundPool.load(context, R.raw.horn, 1)
-        mSoundArray.add(Sound("Horn", hornSoundId))
-        val needleSoundId = mSoundPool.load(context, R.raw.needle_scratch, 1)
-        mSoundArray.add(Sound("Needle", needleSoundId))
-        val photoSoundId = mSoundPool.load(context, R.raw.photo, 1)
-        mSoundArray.add(Sound("Photo", photoSoundId))
-        val whiuSoundId = mSoundPool.load(context, R.raw.whiu, 1)
-        mSoundArray.add(Sound("Whiu", whiuSoundId))
-        val whumSoundId = mSoundPool.load(context, R.raw.whum, 1)
-        mSoundArray.add(Sound("Whum", whumSoundId))
+        val sounds = arrayOf("bass_bling", "bass_drum", "closed_hi_hat", "drum_sound",
+                "horn", "lo_crash", "needle_scratch", "open_hi_hat", "photo", "rapsnare",
+                "rimshot", "scratch")
+
+        for (sound in sounds) {
+            val resId = context.getResources().getIdentifier(sound, "raw", context.packageName);
+            println(resId)
+            val soundId = mSoundPool.load(context, resId, 1)
+            mSoundArray.add(Sound(sound, soundId))
+        }
     }
 
     fun playSound(id: Int) {
