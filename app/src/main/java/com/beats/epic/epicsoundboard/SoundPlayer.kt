@@ -8,15 +8,15 @@ import android.media.SoundPool
 /**
  * Created by Linda on 18/04/18.
  */
-class SoundPlayer(val context: Context) {
+class SoundPlayer(private val context: Context) {
 
-    val mAttributes: AudioAttributes = AudioAttributes.Builder()
+    private val mAttributes: AudioAttributes = AudioAttributes.Builder()
             .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
             .setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED)
             .setUsage(AudioAttributes.USAGE_GAME)
             .build()
 
-    val mSoundPool: SoundPool =
+    private val mSoundPool: SoundPool =
             SoundPool.Builder()
                     .setAudioAttributes(mAttributes)
                     .setMaxStreams(10)
@@ -34,7 +34,7 @@ class SoundPlayer(val context: Context) {
                 "rimshot", "scratch")
 
         for (sound in sounds) {
-            val resId = context.getResources().getIdentifier(sound, "raw", context.packageName);
+            val resId = context.resources.getIdentifier(sound, "raw", context.packageName)
             val soundId = mSoundPool.load(context, resId, 1)
             mSoundArray.add(Sound(sound, soundId))
         }

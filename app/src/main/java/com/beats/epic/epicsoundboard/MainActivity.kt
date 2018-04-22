@@ -8,11 +8,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    var recording = false
-    var startTime: Long = 0
-    var recordedSounds: HashMap<Long, Int> = HashMap()
+    private var recording = false
+    private var startTime: Long = 0
+    private  var recordedSounds: HashMap<Long, Int> = HashMap()
 
-    lateinit var mSoundPlayer: SoundPlayer
+    lateinit private var mSoundPlayer: SoundPlayer
     //lateinit var mRecordPlayer: RecordPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,10 +32,10 @@ class MainActivity : AppCompatActivity() {
     private fun initActionButtons() {
         recButton.setOnClickListener {
             if (recording) {
-                recButton.setText("REC")
+                recButton.text = getString(R.string.rec_button)
                 stopRecording()
             } else {
-                recButton.setText("STOP")
+                recButton.text = getString(R.string.rec_button_stop)
                 startRecording()
             }
         }
@@ -65,11 +65,10 @@ class MainActivity : AppCompatActivity() {
 
             sb.setOnTouchListener { v, event ->
                 if(event.action == MotionEvent.ACTION_DOWN) {
-                    println(v.id)
                     mSoundPlayer.playSound(v.id)
                     if(recording) {
                         val time = System.currentTimeMillis() - startTime
-                        recordedSounds.put(System.currentTimeMillis() - startTime, v.id)
+                        recordedSounds.put(time, v.id)
                     }
                     v.setBackgroundColor(Color.WHITE)
                 } else if(event.action == MotionEvent.ACTION_UP) {

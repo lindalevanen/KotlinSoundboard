@@ -2,11 +2,10 @@ package com.beats.epic.epicsoundboard
 
 import android.os.Handler
 
-
 /**
  * Created by Linda on 18/04/18.
  */
-class RecordPlayer(val soundPlayer: SoundPlayer) {
+class RecordPlayer(private val soundPlayer: SoundPlayer) {
 
     init {
     }
