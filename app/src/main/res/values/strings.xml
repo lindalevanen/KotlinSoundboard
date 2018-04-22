@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">EpicSoundboard</string>
-    <string name="rec_button">REC</string>
+    <string name="rec_button_start">REC</string>
     <string name="rec_button_stop">STOP</string>
+    <string name="clear_button">CLEAR</string>
+    <string name="empty_button" />
 </resources>
