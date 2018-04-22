@@ -31,6 +31,16 @@ class SoundPlayer(val context: Context) {
     fun initsounds() {
         val drumSoundId = mSoundPool.load(context, R.raw.drum_sound, 1)
         mSoundArray.add(Sound("Drums", drumSoundId))
+        val hornSoundId = mSoundPool.load(context, R.raw.horn, 1)
+        mSoundArray.add(Sound("Horn", hornSoundId))
+        val needleSoundId = mSoundPool.load(context, R.raw.needle_scratch, 1)
+        mSoundArray.add(Sound("Needle", needleSoundId))
+        val photoSoundId = mSoundPool.load(context, R.raw.photo, 1)
+        mSoundArray.add(Sound("Photo", photoSoundId))
+        val whiuSoundId = mSoundPool.load(context, R.raw.whiu, 1)
+        mSoundArray.add(Sound("Whiu", whiuSoundId))
+        val whumSoundId = mSoundPool.load(context, R.raw.whum, 1)
+        mSoundArray.add(Sound("Whum", whumSoundId))
     }
 
     fun playSound(id: Int) {

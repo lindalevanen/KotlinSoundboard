@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity() {
 
     var recording = false
     var startTime: Long = 0
-    val recordedSounds: HashMap<Int, Long> = HashMap()
+    var recordedSounds: HashMap<Long, Int> = HashMap()
 
     lateinit var mSoundPlayer: SoundPlayer
     //lateinit var mRecordPlayer: RecordPlayer
@@ -43,12 +43,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun stopRecording() {
         recording = false
-        //val player = RecordPlayer(recordedSounds, mSoundPlayer)
+        val player = RecordPlayer(mSoundPlayer)
+        player.playSounds(recordedSounds)
     }
 
     private fun startRecording() {
         recording = true
-        startTime = System.currentTimeMillis();
+        recordedSounds = HashMap()
+        startTime = System.currentTimeMillis()
     }
 
     private fun initSoundButtons() {
@@ -63,9 +65,11 @@ class MainActivity : AppCompatActivity() {
 
             sb.setOnTouchListener { v, event ->
                 if(event.action == MotionEvent.ACTION_DOWN) {
+                    println(v.id)
                     mSoundPlayer.playSound(v.id)
                     if(recording) {
-                        recordedSounds.put(v.id, System.currentTimeMillis() - startTime)
+                        val time = System.currentTimeMillis() - startTime
+                        recordedSounds.put(System.currentTimeMillis() - startTime, v.id)
                     }
                     v.setBackgroundColor(Color.WHITE)
                 } else if(event.action == MotionEvent.ACTION_UP) {

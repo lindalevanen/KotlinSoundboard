@@ -6,17 +6,16 @@ import android.os.Handler
 /**
  * Created by Linda on 18/04/18.
  */
-class RecordPlayer(val sounds: HashMap<Int, Long>, val soundPlayer: SoundPlayer) {
+class RecordPlayer(val soundPlayer: SoundPlayer) {
 
     init {
     }
 
-    fun playSounds() {
-        //TODO (WIP)
+    fun playSounds(sounds: HashMap<Long, Int>) {
         for((key, value) in sounds) {
             Handler().postDelayed(Runnable {
-                soundPlayer.playSound(key)
-            }, value)
+                soundPlayer.playSound(value)
+            }, key)
         }
     }
 
