@@ -7,7 +7,7 @@ import android.os.Handler
  */
 class RecordPlayer(private val soundPlayer: SoundPlayer) {
 
-    private var mKeepPlaying = false;
+    private var mKeepPlaying = false
     private var mAllSounds: HashMap<Long, Int> = HashMap()
     private var mSoundGroups: HashMap<Int, HashMap<Long,Int>> = HashMap()
     private var mPlayCount = 0

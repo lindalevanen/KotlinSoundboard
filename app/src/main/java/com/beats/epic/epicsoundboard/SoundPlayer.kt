@@ -41,15 +41,12 @@ class SoundPlayer(private val context: Context) {
         for (sound in sounds) {
             val resourceId = context.resources.getIdentifier(sound, "raw", context.packageName)
             val soundId = mSoundPool.load(context, resourceId, 1)
-            println(soundId)
             mSoundArray.add(Sound(sound, soundId))
         }
     }
 
     fun changeSound(path: String): Int {
-        val id = mSoundPool.load(path, 1)
-        println("new id: "+id)
-        return id
+        return mSoundPool.load(path, 1)
     }
 
     fun addView(view: View) {
@@ -63,8 +60,7 @@ class SoundPlayer(private val context: Context) {
         val volume = streamVolumeCurrent.toFloat() / streamVolumeMax
         val soundBView = mParentView.findViewById<View>(id)
         if(recorded) brieflyChangeBGColor(soundBView)
-        val lol = mSoundPool.play(id, volume, volume, 0, 0, 1f)
-        println(lol)
+        mSoundPool.play(id, volume, volume, 0, 0, 1f)
 
     }
 
