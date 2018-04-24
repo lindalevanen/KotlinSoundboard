@@ -1,32 +1,52 @@
 package com.beats.epic.epicsoundboard
 
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.MotionEvent
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
-
-
 
 class MainActivity : AppCompatActivity() {
 
     private var recording = false
     private var startTime: Long = 0
     private var recordedSounds: HashMap<Long, Int> = HashMap()
+    private var editMode = false
 
     lateinit private var mSoundPlayer: SoundPlayer
     lateinit var mRecordPlayer: RecordPlayer
+    lateinit var editTarget: View
+    val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 12
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC)
 
         initPlayers()
         initActionButtons()
         initSoundButtons()
+        if(!checkPermissionForReadExtertalStorage()) {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    fun checkPermissionForReadExtertalStorage(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            return result == PackageManager.PERMISSION_GRANTED
+        }
+        return false
     }
 
     private fun initPlayers() {
@@ -81,6 +101,9 @@ class MainActivity : AppCompatActivity() {
             mRecordPlayer.stopLoop()
             mRecordPlayer.clearSounds()
         }
+        editButton.setOnClickListener {
+            editMode = !editMode
+        }
     }
 
     private fun cancelRecording() {
@@ -113,31 +136,63 @@ class MainActivity : AppCompatActivity() {
         mSoundPlayer.addView(soundBoardGrid)
         for(i in 0..11) {
             val sb = layoutInflater.inflate(R.layout.sound_button, soundBoardGrid, false)
-            if(i >= mSoundPlayer.getSounds().size) {
+            if (i >= mSoundPlayer.getSounds().size) {
                 sb.id = mSoundPlayer.getSounds()[0].id
             } else {
                 sb.id = mSoundPlayer.getSounds()[i].id
             }
 
             sb.setOnTouchListener { v, event ->
-                if(event.action == MotionEvent.ACTION_DOWN) {
-                    mSoundPlayer.playSound(v.id, false)
-                    if(recording) {
-                        val sts = mRecordPlayer.getStartTimeStamp()
-                        if(sts != null && sts > startTime) {
-                            startTime = sts
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    if (editMode) {
+                        editTarget = v
+                        val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+                        if (intent.resolveActivity(packageManager) != null) {
+                            startActivityForResult(intent, 0)
                         }
-                        val time = System.currentTimeMillis() - startTime
-                        recordedSounds.put(time, v.id)
+                    } else {
+                        mSoundPlayer.playSound(v.id, false)
+                        if (recording) {
+                            val sts = mRecordPlayer.getStartTimeStamp()
+                            if (sts != null && sts > startTime) {
+                                startTime = sts
+                            }
+                            val time = System.currentTimeMillis() - startTime
+                            recordedSounds.put(time, v.id)
+                        }
                     }
                     v.setBackgroundColor(Color.WHITE)
-                } else if(event.action == MotionEvent.ACTION_UP) {
+                } else if (event.action == MotionEvent.ACTION_UP) {
                     v.setBackgroundColor(Color.RED)
 
                 }
                 true
             }
             soundBoardGrid.addView(sb)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            val result = data?.data
+            if (result != null) {
+                val selectedImage = data.data
+                val filePath = arrayOf(MediaStore.Audio.Media.DATA)
+                try {
+                    val c = getContentResolver().query(selectedImage, filePath, null, null, null)
+                    c.moveToFirst()
+                    val columnIndex = c.getColumnIndex(filePath[0])
+                    var picturePath = c.getString(columnIndex)
+                    c.close()
+                    if (picturePath == null) {
+                        picturePath = selectedImage.path
+                    }
+                    editTarget.id = mSoundPlayer.changeSound(picturePath)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
     }
 
