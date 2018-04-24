@@ -39,10 +39,14 @@ class SoundPlayer(private val context: Context) {
                 "rimshot", "scratch")
 
         for (sound in sounds) {
-            val resId = context.resources.getIdentifier(sound, "raw", context.packageName)
-            val soundId = mSoundPool.load(context, resId, 1)
+            val resourceId = context.resources.getIdentifier(sound, "raw", context.packageName)
+            val soundId = mSoundPool.load(context, resourceId, 1)
             mSoundArray.add(Sound(sound, soundId))
         }
+    }
+
+    fun changeSound(path: String): Int {
+        return mSoundPool.load(path, 1)
     }
 
     fun addView(view: View) {
