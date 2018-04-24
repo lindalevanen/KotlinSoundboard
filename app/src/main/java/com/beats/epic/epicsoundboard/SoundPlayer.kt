@@ -1,9 +1,12 @@
 package com.beats.epic.epicsoundboard
 
 import android.content.Context
+import android.graphics.Color
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
+import android.os.Handler
+import android.view.View
 
 /**
  * Created by Linda on 18/04/18.
@@ -24,6 +27,8 @@ class SoundPlayer(private val context: Context) {
 
     private val mSoundArray: ArrayList<Sound> = ArrayList()
 
+    lateinit private var mParentView: View
+
     fun getSounds(): ArrayList<Sound> {
         return mSoundArray
     }
@@ -34,19 +39,36 @@ class SoundPlayer(private val context: Context) {
                 "rimshot", "scratch")
 
         for (sound in sounds) {
-            val resId = context.resources.getIdentifier(sound, "raw", context.packageName)
-            val soundId = mSoundPool.load(context, resId, 1)
+            val resourceId = context.resources.getIdentifier(sound, "raw", context.packageName)
+            val soundId = mSoundPool.load(context, resourceId, 1)
             mSoundArray.add(Sound(sound, soundId))
         }
     }
 
-    fun playSound(id: Int) {
+    fun changeSound(path: String): Int {
+        return mSoundPool.load(path, 1)
+    }
+
+    fun addView(view: View) {
+        mParentView = view
+    }
+
+    fun playSound(id: Int, recorded: Boolean) {
         val mgr = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC)
         val streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val volume = streamVolumeCurrent.toFloat() / streamVolumeMax
+        val soundBView = mParentView.findViewById<View>(id)
+        if(recorded) brieflyChangeBGColor(soundBView)
         mSoundPool.play(id, volume, volume, 0, 0, 1f)
 
+    }
+
+    fun brieflyChangeBGColor(view: View) {
+        view.setBackgroundColor(Color.WHITE)
+        Handler().postDelayed({
+            view.setBackgroundColor(Color.RED)
+        }, 200)
     }
 
 }
