@@ -20,20 +20,46 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <Button android:id="@+id/recButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="@string/rec_button_start"/>
+        <Button android:id="@+id/playButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/rec_button_play"
+            android:visibility="gone"/>
+        <Button android:id="@+id/stopButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/rec_button_stop"
+            android:visibility="gone"/>
+        <Button android:id="@+id/okButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/rec_button_ok"
+            android:visibility="gone"/>
+        <Button android:id="@+id/cancelButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/rec_button_cancel"
+            android:visibility="gone"/>
         <Button android:id="@+id/clearButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="@string/empty_button"/>
+            android:text="@string/clear_button"
+            android:visibility="gone"/>
+
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Button 3"/>
+            android:text="Add Sound"/>
     </LinearLayout>
 
 </LinearLayout>

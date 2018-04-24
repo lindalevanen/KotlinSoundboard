@@ -4,4 +4,7 @@
     <string name="rec_button_stop">STOP</string>
     <string name="clear_button">CLEAR</string>
     <string name="empty_button" />
+    <string name="rec_button_cancel">CANCEL</string>
+    <string name="rec_button_ok">OK</string>
+    <string name="rec_button_play">PLAY</string>
 </resources>
