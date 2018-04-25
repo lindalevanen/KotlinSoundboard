@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private var startTime: Long = 0
     private var recordedSounds: HashMap<Long, Int> = HashMap()
     private var editMode = false
+    private var soundButtons = arrayOf<View>()
 
     lateinit private var mSoundPlayer: SoundPlayer
     lateinit var mRecordPlayer: RecordPlayer
@@ -103,6 +104,15 @@ class MainActivity : AppCompatActivity() {
         }
         editButton.setOnClickListener {
             editMode = !editMode
+            if (editMode) {
+                for (view in soundButtons) {
+                    view.setBackgroundColor(Color.GREEN);
+                }
+            } else {
+                for (view in soundButtons) {
+                    view.setBackgroundColor(Color.RED);
+                }
+            }
         }
     }
 
@@ -169,6 +179,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             soundBoardGrid.addView(sb)
+            soundButtons += sb
         }
     }
 
@@ -177,18 +188,18 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == RESULT_OK) {
             val result = data?.data
             if (result != null) {
-                val selectedImage = data.data
+                val selectedSound = data.data
                 val filePath = arrayOf(MediaStore.Audio.Media.DATA)
                 try {
-                    val c = getContentResolver().query(selectedImage, filePath, null, null, null)
+                    val c = getContentResolver().query(selectedSound, filePath, null, null, null)
                     c.moveToFirst()
                     val columnIndex = c.getColumnIndex(filePath[0])
-                    var picturePath = c.getString(columnIndex)
+                    var soundPath = c.getString(columnIndex)
                     c.close()
-                    if (picturePath == null) {
-                        picturePath = selectedImage.path
+                    if (soundPath == null) {
+                        soundPath = selectedSound.path
                     }
-                    editTarget.id = mSoundPlayer.changeSound(picturePath)
+                    editTarget.id = mSoundPlayer.changeSound(soundPath)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
