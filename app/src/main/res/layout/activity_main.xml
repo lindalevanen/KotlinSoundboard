@@ -62,13 +62,19 @@
             android:drawableLeft="@drawable/ic_clear_black_24dp"
             android:text="Cancel"
             android:visibility="gone"/>
+        <Button android:id="@+id/micButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Record"
+            android:visibility="gone"/>
         <Button
             android:id="@+id/editButton"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:drawableLeft="@drawable/ic_add_black_24dp"
-            android:text="Add sound" />
+            android:text="Add sound"/>
     </LinearLayout>
 
 </LinearLayout>

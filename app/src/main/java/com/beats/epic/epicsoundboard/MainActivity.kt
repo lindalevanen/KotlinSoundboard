@@ -13,6 +13,9 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MotionEvent
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
+import android.media.MediaRecorder
+import java.io.File
+import android.os.Environment
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,7 +28,12 @@ class MainActivity : AppCompatActivity() {
     lateinit private var mSoundPlayer: SoundPlayer
     lateinit var mRecordPlayer: RecordPlayer
     lateinit var editTarget: View
+    lateinit var mRecorder: MediaRecorder
+
+    val MY_REQUESTS_READ_AUDIO = 0
     val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 12
+    val MY_PERMISSIONS_REQUEST_AUDIO = 13
+    val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 14
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,16 +43,40 @@ class MainActivity : AppCompatActivity() {
         initPlayers()
         initActionButtons()
         initSoundButtons()
-        if(!checkPermissionForReadExtertalStorage()) {
+        if (!checkPermissionForReadExtertalStorage()) {
             ActivityCompat.requestPermissions(this,
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
+        }
+        if (!checkPermissionForRecordAudio()) {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.RECORD_AUDIO),
+                    MY_PERMISSIONS_REQUEST_AUDIO)
+        }
+        if (!checkPermissionForWriteExternalStorage()) {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
         }
     }
 
     fun checkPermissionForReadExtertalStorage(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            return result == PackageManager.PERMISSION_GRANTED
+        }
+        return false
+    }
+    fun checkPermissionForRecordAudio(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO)
+            return result == PackageManager.PERMISSION_GRANTED
+        }
+        return false
+    }
+    fun checkPermissionForWriteExternalStorage(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
             return result == PackageManager.PERMISSION_GRANTED
         }
         return false
@@ -64,15 +96,18 @@ class MainActivity : AppCompatActivity() {
             clearButton.visibility = View.GONE
             playButton.visibility = View.GONE
             stopButton.visibility = View.GONE
+            editButton.visibility = View.GONE
             startRecording()
         }
         cancelButton.setOnClickListener {
             recButton.visibility = View.VISIBLE
             okButton.visibility = View.GONE
             cancelButton.visibility = View.GONE
-            if(mRecordPlayer.getSoundGroups().size > 0) {
+            if (mRecordPlayer.getSoundGroups().size > 0) {
                 stopButton.visibility = View.VISIBLE
                 clearButton.visibility = View.VISIBLE
+            } else {
+                editButton.visibility = View.VISIBLE
             }
             cancelRecording()
         }
@@ -99,21 +134,65 @@ class MainActivity : AppCompatActivity() {
             clearButton.visibility = View.GONE
             stopButton.visibility = View.GONE
             playButton.visibility = View.GONE
+            editButton.visibility = View.VISIBLE
             mRecordPlayer.stopLoop()
             mRecordPlayer.clearSounds()
         }
         editButton.setOnClickListener {
             editMode = !editMode
             if (editMode) {
+                recButton.visibility = View.GONE
+                micButton.visibility = View.VISIBLE
                 for (view in soundButtons) {
                     view.setBackgroundColor(Color.GREEN);
                 }
             } else {
+                recButton.visibility = View.VISIBLE
+                micButton.visibility = View.GONE
                 for (view in soundButtons) {
                     view.setBackgroundColor(Color.RED);
                 }
             }
         }
+        micButton.setOnTouchListener { v, event ->
+            if (isExternalStorageWritable()) {
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    startMicrophone()
+                } else if (event.action == MotionEvent.ACTION_UP) {
+                    stopMicrophone()
+                }
+            }
+            true
+        }
+    }
+
+    fun startMicrophone() {
+        mRecorder = MediaRecorder()
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        mRecorder.setOutputFile(getDownloadsFolder().path + "/" + System.currentTimeMillis() + ".3gp")
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        mRecorder.prepare();
+        mRecorder.start();
+    }
+
+    fun stopMicrophone() {
+        mRecorder.stop()
+        mRecorder.reset()
+        mRecorder.release()
+    }
+
+    fun isExternalStorageWritable(): Boolean {
+        return (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED)
+    }
+
+    fun getDownloadsFolder(): File { // Get the external directory to save files to.
+        val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path)
+        if (!file.exists()) {
+            println("Creating directory")
+            file.mkdirs()
+        }
+        return file
     }
 
     private fun cancelRecording() {
@@ -158,7 +237,7 @@ class MainActivity : AppCompatActivity() {
                         editTarget = v
                         val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
                         if (intent.resolveActivity(packageManager) != null) {
-                            startActivityForResult(intent, 0)
+                            startActivityForResult(intent, MY_REQUESTS_READ_AUDIO)
                         }
                     } else {
                         mSoundPlayer.playSound(v.id, false)
@@ -207,8 +286,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /*
-    * Ref: https://developer.android.com/guide/topics/media/mediarecorder.html#example,
-    * for recording audio
-    * */
 }
